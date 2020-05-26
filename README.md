@@ -1,4 +1,4 @@
-# LazySql: Lazy sql connector for lazy people
+# LazySql: Sql connector for lazy people
 
 ## Usage
 
