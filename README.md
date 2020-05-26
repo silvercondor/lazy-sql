@@ -30,7 +30,7 @@ res = read_db.query(query1)
 ### Writing
 
 ```
-query2 = f"INSERT * INTO write_table(value1, value2, value3) VALUES(%s, %s, %s)"
+query2 = f"INSERT INTO write_table(value1, value2, value3) VALUES(%s, %s, %s)"
 write_db.query(query2, , data=(test, 1, 2.3), commit=True)
 ```
 
