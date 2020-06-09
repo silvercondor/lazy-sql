@@ -1,3 +1,6 @@
+import asyncio
+
+
 class ConnectionNotFoundException(Exception):
     pass
 
@@ -23,7 +26,7 @@ class LazySql:
                 if not data:
                     cur.execute(f"{query}")
                 else:
-                    cur.execute(f"{query}", data)
+                    cur.execute(query, data)
                 if not commit:
                     rows = cur.fetchall()
                     if not rows:
@@ -39,6 +42,49 @@ class LazySql:
             if self.logger:
                 self.logger.exception(f'{logmsg}')
             return False
+
+    def async_query(self, query_list):
+        """
+        Queries are executed asynchoronously
+
+        Be cautious when using with single connection databases like sqlite
+
+        """
+        async def __query(query, data=None, commit=False):
+            try:
+                with self.connector.connect(self.uri) as conn:
+                    cur = conn.cursor()
+                    if not data:
+                        cur.execute(f"{query}")
+                    else:
+                        cur.execute(query, data)
+                    if not commit:
+                        rows = cur.fetchall()
+                        if not rows:
+                            return rows
+                        col_names = [c[0] for c in cur.description]
+                        return [dict(zip(col_names, r)) for r in rows]
+                    else:
+                        conn.commit()
+                    return True
+            except Exception as e:
+                logmsg = 'LazySql query Exception'
+                print(f'{logmsg} {e}')
+                if self.logger:
+                    self.logger.exception(f'{logmsg}')
+                return False
+        coros = []
+        for q in query_list:
+            if 'data' not in q:
+                q['data'] = None
+            if 'commit' not in q:
+                q['commit'] = False
+            coros.append(
+                __query(q['query'], data=q['data'], commit=q['commit']))
+        loop = asyncio.get_event_loop()
+        res = loop.run_until_complete(asyncio.gather(*coros))
+        loop.close()
+        return res
 
     def batch(self, query, data=None, commit=False, close=False):
         """
