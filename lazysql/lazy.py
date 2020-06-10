@@ -92,7 +92,8 @@ class LazySql:
                 q['commit'] = False
             coros.append(
                 __query(q['query'], data=q['data'], commit=q['commit']))
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         res = loop.run_until_complete(asyncio.gather(*coros))
         loop.close()
         return res
