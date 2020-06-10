@@ -1,4 +1,4 @@
-# LazySql: Sql connector for lazy people
+# LazySql: SQL connector for lazy people
 
 ## Usage
 
@@ -49,4 +49,30 @@ write_db.commit()
 write_db.batch(None, commit=True) #Commits directly
 write_db.close() #Close without committing
 write_db.batch(None, close=True) #Close without committing
+```
+
+### Async
+
+```
+read_db.async_query([
+    {"query":"SELECT * FROM test WHERE _str='test8}
+])
+
+#Result will be in list of order of query sent
+#i.e
+[
+    [
+        {'id': 5, '_str': 'test1', '_int': 1, '_flt': 2.5},
+        {'id': 15, '_str': 'test1', '_int': 1, '_flt': 2.5},
+        {'id': 25, '_str': 'test1', '_int': 1, '_flt': 2.5}],
+    [
+        {'id': 6, '_str': 'test2', '_int': 2, '_flt': 3.5},
+        {'id': 16, '_str': 'test2', '_int': 2, '_flt': 3.5},
+        {'id': 26, '_str': 'test2', '_int': 2, '_flt': 3.5}
+    ],
+    [
+        {'id': 7, '_str': 'test3', '_int': 3, '_flt': 4.5},
+        {'id': 17, '_str': 'test3', '_int': 3, '_flt': 4.5},
+        {'id': 27, '_str': 'test3', '_int': 3, '_flt': 4.5}]
+]
 ```
