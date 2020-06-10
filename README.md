@@ -1,5 +1,13 @@
 # LazySql: SQL connector for lazy people
 
+## Installation
+
+```
+pip3 install lazysql
+```
+
+---
+
 ## Usage
 
 ### Connecting
@@ -51,11 +59,15 @@ write_db.close() #Close without committing
 write_db.batch(None, close=True) #Close without committing
 ```
 
+---
+
 ### Async
 
 ```
 read_db.async_query([
-    {"query":"SELECT * FROM test WHERE _str='test8}
+    {"query":"SELECT * FROM test WHERE _str='test1},
+    {"query":"SELECT * FROM test WHERE _str='test2},
+    {"query":"SELECT * FROM test WHERE _str='test3}
 ])
 
 #Result will be in list of order of query sent
