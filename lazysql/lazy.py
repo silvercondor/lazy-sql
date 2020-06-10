@@ -5,6 +5,10 @@ class ConnectionNotFoundException(Exception):
     pass
 
 
+class InvalidQueryException(Exception):
+    pass
+
+
 class LazySql:
     def __init__(self, connector, uri, logger=None):
         self.connector = connector  # DB connector i.e psycopg2, sqlite3
@@ -73,8 +77,15 @@ class LazySql:
                 if self.logger:
                     self.logger.exception(f'{logmsg}')
                 return False
+        if not isinstance(query_list, list):
+            raise TypeError(f"Invalid query, list required")
         coros = []
         for q in query_list:
+            if not isinstance(q, dict):
+                raise TypeError(f"Invalid query {q}")
+            if 'query' not in q:
+                raise InvalidQueryException(
+                    f"Required argument query not found")
             if 'data' not in q:
                 q['data'] = None
             if 'commit' not in q:
