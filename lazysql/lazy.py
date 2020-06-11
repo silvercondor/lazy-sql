@@ -10,6 +10,12 @@ class InvalidQueryException(Exception):
 
 
 class LazySql:
+    """
+    connector: library object that calls .connect()
+    uri: uri passed into .connect()
+    max_conn: maximum number of simultaneous connections (for async)
+    """
+
     def __init__(self, connector, uri, logger=None, max_conn=3):
         self.connector = connector  # DB connector i.e psycopg2, sqlite3
         self.uri = uri
