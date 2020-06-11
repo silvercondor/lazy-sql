@@ -10,10 +10,11 @@ class InvalidQueryException(Exception):
 
 
 class LazySql:
-    def __init__(self, connector, uri, logger=None):
+    def __init__(self, connector, uri, logger=None, max_conn=3):
         self.connector = connector  # DB connector i.e psycopg2, sqlite3
         self.uri = uri
         self.conn = None
+        self.max_conn = max_conn
         if logger:
             self.logger = logger
         else:
@@ -80,6 +81,7 @@ class LazySql:
         if not isinstance(query_list, list):
             raise TypeError(f"Invalid query, list required")
         coros = []
+        res = []
         for q in query_list:
             if not isinstance(q, dict):
                 raise TypeError(f"Invalid query {q}")
@@ -92,10 +94,19 @@ class LazySql:
                 q['commit'] = False
             coros.append(
                 __query(q['query'], data=q['data'], commit=q['commit']))
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        res = loop.run_until_complete(asyncio.gather(*coros))
-        loop.close()
+            if len(coros) >= self.max_conn:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                loop_res = loop.run_until_complete(asyncio.gather(*coros))
+                res.extend(loop_res)
+                loop.close()
+                coros = []
+        if coros:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop_res = loop.run_until_complete(asyncio.gather(*coros))
+            res.extend(loop_res)
+            loop.close()
         return res
 
     def batch(self, query, data=None, commit=False, close=False):
