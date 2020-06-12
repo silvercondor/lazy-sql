@@ -18,7 +18,7 @@ import sqlite3
 import psycopg2
 from lazysql import LazySql
 
-read_db = LazySql(sqlite3, 'read.db',)
+read_db = LazySql(sqlite3, 'read.db', max_conn=3)
 
 write_db = LazySql(psycopg2, "dbname='write_db' user='postgres' host='localhost' password='UnsafePassword' port=5432")
 ```
@@ -64,10 +64,10 @@ write_db.batch(None, close=True) #Close without committing
 ### Async
 
 ```
-read_db.async_query([
-    {"query":"SELECT * FROM test WHERE _str='test1},
-    {"query":"SELECT * FROM test WHERE _str='test2},
-    {"query":"SELECT * FROM test WHERE _str='test3}
+test1res, test2res, test3res = read_db.async_query([
+    {"query":"SELECT * FROM test WHERE _str='test1'},
+    {"query":"SELECT * FROM test WHERE _str='test2'},
+    {"query":"SELECT * FROM test WHERE _str='test3'}
 ])
 
 #Result will be in list of order of query sent
@@ -76,7 +76,8 @@ read_db.async_query([
     [
         {'id': 5, '_str': 'test1', '_int': 1, '_flt': 2.5},
         {'id': 15, '_str': 'test1', '_int': 1, '_flt': 2.5},
-        {'id': 25, '_str': 'test1', '_int': 1, '_flt': 2.5}],
+        {'id': 25, '_str': 'test1', '_int': 1, '_flt': 2.5}
+    ],
     [
         {'id': 6, '_str': 'test2', '_int': 2, '_flt': 3.5},
         {'id': 16, '_str': 'test2', '_int': 2, '_flt': 3.5},
