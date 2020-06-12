@@ -13,7 +13,7 @@ class LazySql:
     """
     connector: library object that calls .connect()
     uri: uri passed into .connect()
-    max_conn: maximum number of simultaneous connections (for async)
+    max_conn: maximum number of simultaneous connections per query (for async)
     """
 
     def __init__(self, connector, uri, logger=None, max_conn=3):
