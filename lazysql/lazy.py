@@ -66,7 +66,7 @@ class LazySql:
                 with self.connector.connect(self.uri) as conn:
                     cur = conn.cursor()
                     if not data:
-                        cur.execute({query})
+                        cur.execute(query)
                     else:
                         cur.execute(query, data)
                     if not commit:
