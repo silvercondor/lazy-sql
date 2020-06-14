@@ -8,6 +8,14 @@ pip3 install lazysql
 
 ---
 
+## Testing
+
+```
+python3 -m unittest
+```
+
+---
+
 ## Usage
 
 ### Connecting
@@ -65,9 +73,9 @@ write_db.batch(None, close=True) #Close without committing
 
 ```
 test1res, test2res, test3res = read_db.async_query([
-    {"query":"SELECT * FROM test WHERE _str='test1'},
-    {"query":"SELECT * FROM test WHERE _str='test2'},
-    {"query":"SELECT * FROM test WHERE _str='test3'}
+    {"query":"SELECT * FROM test WHERE _str=?", "data":"test1"},
+    {"query":"SELECT * FROM test WHERE _str=?", "data":"test2"},
+    {"query":"SELECT * FROM test WHERE _str=?", "data":"test3"}
 ])
 
 #Result will be in list of order of query sent
