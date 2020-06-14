@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="lazysql",
-    version="0.0.4",
+    version="0.0.5",
     author="silvercondor",
     author_email="silvercondor@protonmail.com",
     description="SQL connector for lazy people",
